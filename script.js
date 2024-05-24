@@ -13,7 +13,7 @@ async function init() {
         walletconnect: {
             package: window.WalletConnectProvider.default,
             options: {
-                infuraId: "YOUR_INFURA_PROJECT_ID"
+                infuraId: "ebe7e46481fc4982a15dae4f56536d6c"
             }
         },
         fortmatic: {
