@@ -12,6 +12,7 @@ window.addEventListener('load', async () => {
         } catch (error) {
             console.error('User denied account access');
         }
+        window.ethereum.on('chainChanged', handleChainChanged);
     }
     // Legacy dapp browsers...
     else if (window.web3) {
@@ -19,7 +20,7 @@ window.addEventListener('load', async () => {
     }
     // Non-dapp browsers...
     else {
-        console.error('No Avalanche wallet detected. Install an Avalanche wallet like MetaMask');
+        console.error('No wallet detected. Install a wallet like MetaMask');
     }
 
     if (web3) {
@@ -84,7 +85,7 @@ document.getElementById('claim').addEventListener('click', async () => {
 
 document.getElementById('connectWallet').addEventListener('click', async () => {
     if (!web3) {
-        console.error('No Avalanche wallet detected. Install an Avalanche wallet like MetaMask');
+        console.error('No wallet detected. Install a wallet like MetaMask');
         return;
     }
 
@@ -95,3 +96,9 @@ document.getElementById('connectWallet').addEventListener('click', async () => {
         console.error('User denied account access');
     }
 });
+
+function handleChainChanged(chainId) {
+    // Handle chain change
+    console.log('Chain changed:', chainId);
+    window.location.reload();
+}
