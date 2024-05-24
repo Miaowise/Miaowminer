@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Miaow Miner</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/@walletconnect/web3-provider@1.6.6/dist/umd/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/fortmatic@2.0.6/dist/fortmatic.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/web3modal@1.9.5/dist/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/ethers@5.0.31/dist/ethers.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Memecoin Miner</h1>
+
+        <button id="connectButton" onclick="connectWallet()">Connect Wallet</button>
+
+        <div id="walletAddress"></div>
+
+        <div class="form-group">
+            <label for="depositAmount">Deposit Amount</label>
+            <input type="number" id="depositAmount" placeholder="Enter amount">
+        </div>
+        <div class="form-group">
+            <label for="referrerAddress">Referrer Address</label>
+            <input type="text" id="referrerAddress" placeholder="Enter referrer address (optional)">
+        </div>
+        <button onclick="deposit()">Deposit</button>
+
+        <button onclick="claim()">Claim Rewards</button>
+
+        <div class="form-group">
+            <label for="userAddress">User Address</label>
+            <input type="text" id="userAddress" placeholder="Enter user address">
+        </div>
+        <button onclick="getUserInfo()">Get User Info</button>
+
+        <div id="userInfo"></div>
+    </div>
+
+    <script>
+        let provider;
+        let signer;
+        let userAddress;
+        let web3Modal;
+        let connection;
+        const contractAddress = 'YOUR_CONTRACT_ADDRESS';
+        const contractABI = [
+            // Replace this with your contract's ABI
+        ];
+
+        const contract = new ethers.Contract(contractAddress, contractABI, signer);
+
+        async function init() {
+            const providerOptions = {
+                walletconnect: {
+                    package: window.WalletConnectProvider.default,
+                    options: {
+                        infuraId: "YOUR_INFURA_PROJECT_ID"
+                    }
+                },
+                fortmatic: {
+                    package: window.Fortmatic,
+                    options: {
+                        key: "YOUR_FORTMATIC_KEY"
+                    }
+                }
+            };
+
+            web3Modal = new window.Web3Modal.default({
+                cacheProvider: false,
+                providerOptions
+            });
+        }
+
+        async function connectWallet() {
+            try {
+                connection = await web3Modal.connect();
+                provider = new ethers.providers.Web3Provider(connection);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+                document.getElementById('walletAddress').innerText = `Connected: ${userAddress}`;
+                document.getElementById('connectButton').innerText = 'Wallet Connected';
+            } catch (error) {
+                console.error("Error connecting to wallet", error);
+            }
+        }
+
+        async function deposit() {
+            if (!signer) return alert("Please connect your wallet first!");
+
+            const amount = document.getElementById('depositAmount').value;
+            const referrer = document.getElementById('referrerAddress').value || '0x0000000000000000000000000000000000000000';
+
+            // Implement permit functionality here to get v, r, s, and deadline
+
+            // Assuming v, r, s, and deadline are obtained
+            const deadline = Math.floor(Date.now() / 1000) + 3600; // 1 hour from now
+            const v = 0; // replace with actual value
+            const r = '0x'; // replace with actual value
+            const s = '0x'; // replace with actual value
+
+            const tx = await contract.deposit(amount, referrer, deadline, v, r, s);
+            await tx.wait();
+
+            alert('Deposit successful!');
+        }
+
+        async function claim() {
+            if (!signer) return alert("Please connect your wallet first!");
+
+            const tx = await contract.claim();
+            await tx.wait();
+
+            alert('Rewards claimed!');
+        }
+
+        async function getUserInfo() {
+            if (!signer) return alert("Please connect your wallet first!");
+
+            const userAddress = document.getElementById('userAddress').value;
+            const userInfo = await contract.users(userAddress);
+
+            document.getElementById('userInfo').innerHTML = `
+                <p>Deposit: ${ethers.utils.formatUnits(userInfo.deposit, 18)} tokens</p>
+                <p>Last Claim: ${new Date(userInfo.lastClaim * 1000).toLocaleString()}</p>
+                <p>Referrer: ${userInfo.referrer}</p>
+            `;
+        }
+
+        window.addEventListener('load', async () => {
+            await init();
+        });
+    </script>
+</body>
+</html>
