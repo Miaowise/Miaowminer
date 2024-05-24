@@ -51,7 +51,20 @@ function generateReferralLink(address) {
 }
 
 document.getElementById('deposit').addEventListener('click', async () => {
-    // Add deposit logic here
+    const depositAmount = document.getElementById('depositAmount').value;
+    if (!depositAmount || depositAmount <= 0) {
+        alert('Please enter a valid deposit amount');
+        return;
+    }
+
+    // Convert deposit amount to Wei
+    const amountWei = web3.utils.toWei(depositAmount, 'ether');
+
+    // Call the deposit function on the contract
+    await contract.methods.deposit(amountWei).send({ from: web3.eth.defaultAccount });
+
+    // Update contract info after deposit
+    updateContractInfo();
 });
 
 document.getElementById('claim').addEventListener('click', async () => {
