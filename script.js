@@ -3,28 +3,38 @@ let contract;
 let userReferralLink;
 
 window.addEventListener('load', async () => {
+    // Modern dapp browsers...
     if (window.ethereum) {
         web3 = new Web3(window.ethereum);
         try {
+            // Request account access if needed
             await window.ethereum.request({ method: 'eth_requestAccounts' });
         } catch (error) {
             console.error('User denied account access');
         }
-    } else {
+    }
+    // Legacy dapp browsers...
+    else if (window.web3) {
+        web3 = new Web3(window.web3.currentProvider);
+    }
+    // Non-dapp browsers...
+    else {
         console.error('No Avalanche wallet detected. Install an Avalanche wallet like MetaMask');
     }
 
-    const provider = new web3.providers.HttpProvider('https://api.avax.network/ext/bc/C/rpc');
-    web3 = new Web3(provider);
+    if (web3) {
+        const provider = new web3.providers.HttpProvider('https://api.avax.network/ext/bc/C/rpc');
+        web3.setProvider(provider);
 
-    const contractAddress = 'YOUR_CONTRACT_ADDRESS';
-    const contractABI = [ /* Your contract ABI */ ];
-    contract = new web3.eth.Contract(contractABI, contractAddress);
+        const contractAddress = 'YOUR_CONTRACT_ADDRESS';
+        const contractABI = [ /* Your contract ABI */ ];
+        contract = new web3.eth.Contract(contractABI, contractAddress);
 
-    updateContractInfo();
+        updateContractInfo();
 
-    if (web3 && web3.eth.defaultAccount) {
-        userReferralLink = generateReferralLink(web3.eth.defaultAccount);
+        if (web3.eth.defaultAccount) {
+            userReferralLink = generateReferralLink(web3.eth.defaultAccount);
+        }
     }
 });
 
@@ -73,13 +83,15 @@ document.getElementById('claim').addEventListener('click', async () => {
 });
 
 document.getElementById('connectWallet').addEventListener('click', async () => {
-    if (window.ethereum) {
-        try {
-            await window.ethereum.request({ method: 'eth_requestAccounts' });
-        } catch (error) {
-            console.error('User denied account access');
-        }
-    } else {
+    if (!web3) {
         console.error('No Avalanche wallet detected. Install an Avalanche wallet like MetaMask');
+        return;
+    }
+
+    try {
+        // Request account access if needed
+        await window.ethereum.request({ method: 'eth_requestAccounts' });
+    } catch (error) {
+        console.error('User denied account access');
     }
 });
