@@ -1,5 +1,6 @@
 let web3;
 let contract;
+let userReferralLink;
 
 window.addEventListener('load', async () => {
     if (window.ethereum) {
@@ -20,6 +21,10 @@ window.addEventListener('load', async () => {
     contract = new web3.eth.Contract(contractABI, contractAddress);
 
     updateContractInfo();
+
+    if (web3 && web3.eth.defaultAccount) {
+        userReferralLink = generateReferralLink(web3.eth.defaultAccount);
+    }
 });
 
 async function updateContractInfo() {
@@ -35,6 +40,14 @@ async function updateContractInfo() {
     document.getElementById('totalRewards').textContent = web3.utils.fromWei(totalRewards, 'ether');
     document.getElementById('claimableRewards').textContent = web3.utils.fromWei(claimableRewards, 'ether');
     document.getElementById('contractBalance').textContent = web3.utils.fromWei(contractBalance, 'ether');
+
+    if (userReferralLink) {
+        document.getElementById('referralLink').textContent = userReferralLink;
+    }
+}
+
+function generateReferralLink(address) {
+    return `https://yourwebsite.com/?ref=${address}`;
 }
 
 document.getElementById('deposit').addEventListener('click', async () => {
