@@ -3,34 +3,43 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Memecoin Miner</title>
+    <title>MiaowMiner Dashboard</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-    <header>
-        <h1>Miaow Miner</h1>
+    <div class="container">
+        <h1>MiaowMiner Dashboard</h1>
         <button id="connectWallet">Connect Wallet</button>
-    </header>
-    <main>
-        <div class="info">
-            <h2>Contract Info</h2>
-            <p>Total Rewards Collected: <span id="totalRewards">0</span></p>
-            <p>Claimable Rewards: <span id="claimableRewards">0</span></p>
-            <p>Contract Balance: <span id="contractBalance">0</span></p>
-            <p>Your Referral Link: <span id="referralLink"></span></p>
+        
+        <div id="account" class="info"></div>
+        
+        <div class="card">
+            <h2>Deposit AVAX</h2>
+            <input type="number" id="depositAvaxAmount" placeholder="AVAX Amount">
+            <input type="text" id="depositAvaxRef" placeholder="Referral Address (optional)">
+            <button id="depositAvax">Deposit AVAX</button>
         </div>
-        <div class="actions">
-            <h2>Actions</h2>
-            <label for="depositAmount">Deposit Amount:</label>
-            <input type="number" id="depositAmount" min="0">
-            <button id="deposit">Deposit Tokens</button>
-            <button id="claim">Claim Rewards</button>
+        
+        <div class="card">
+            <h2>Deposit Miaow</h2>
+            <input type="number" id="depositMiaowAmount" placeholder="Miaow Amount">
+            <input type="text" id="depositMiaowRef" placeholder="Referral Address (optional)">
+            <button id="depositMiaow">Deposit Miaow</button>
         </div>
-    </main>
-    <footer>
-        <p>&copy; 2024 Memecoin Miner. All rights reserved.</p>
-    </footer>
-    <script src="https://cdn.jsdelivr.net/npm/web3@1.5.3/dist/web3.min.js"></script>
-    <script src="script.js"></script>
+        
+        <div class="card">
+            <h2>Withdraw</h2>
+            <button id="withdraw">Withdraw</button>
+        </div>
+        
+        <div class="card">
+            <h2>Compound</h2>
+            <input type="text" id="compoundRef" placeholder="Referral Address (optional)">
+            <button id="compound">Compound</button>
+        </div>
+    </div>
+    
+    <script src="https://cdn.jsdelivr.net/npm/web3@latest/dist/web3.min.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>
