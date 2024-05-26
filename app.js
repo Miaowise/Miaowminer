@@ -4,6 +4,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const depositMiaowButton = document.getElementById('depositMiaow');
     const withdrawButton = document.getElementById('withdraw');
     const compoundButton = document.getElementById('compound');
+    const claimRewardsButton = document.getElementById('claimRewards');
     
     let web3;
     let account;
@@ -712,6 +713,9 @@ document.addEventListener('DOMContentLoaded', () => {
                 const accounts = await web3.eth.getAccounts();
                 account = accounts[0];
                 document.getElementById('account').textContent = `Connected: ${account}`;
+                generateReferralLink(account);
+                updateContractBalance();
+                updateTrainersCount();
             } catch (error) {
                 console.error("User denied account access");
             }
@@ -776,4 +780,40 @@ document.addEventListener('DOMContentLoaded', () => {
             }
         }
     });
-});
+
+    claimRewardsButton.addEventListener('click', async () => {
+        if (web3 && account) {
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+            try {
+                await contract.methods.withdraw().send({ from: account });
+                alert('Rewards claimed successfully');
+            } catch (error) {
+                console.error(error);
+                alert('Error during claiming rewards');
+            }
+        }
+    });
+
+    function generateReferralLink(account) {
+        const referralLink = `${window.location.href}?ref=${account}`;
+        document.getElementById('referralLink').value = referralLink;
+    }
+
+    async function updateContractBalance() {
+        if (web3 && account) {
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+            try {
+                const balance = await contract.methods.getBalance().call();
+                document.getElementById('contractBalance').textContent = `${web3.utils.fromWei(balance, 'ether')} Miaow`;
+            } catch (error) {
+                console.error(error);
+                document.getElementById('contractBalance').textContent = 'Error';
+            }
+        }
+    }
+
+    async function updateTrainersCount() {
+        if (web3 && account) {
+            const contract = new web3.eth.Contract(contractABI, contractAddress);
+            try {
+                const trainers = await contract
